@@ -15,7 +15,6 @@ class Email:
 		self.email.quit()
 
 def login(username: str, password: str, domain: str='smtp.gmail.com', port: int=587) -> Email:
-	# email = smtplib.SMTP_SSL(domain, 465)
 	email = smtplib.SMTP(domain, port)
 	email.ehlo()
 	email.starttls()

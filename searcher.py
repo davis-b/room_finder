@@ -28,17 +28,6 @@ def request_listings(api_endpoint=default_api_url, region_id=3) -> dict:
 def expand_urlkey(key) -> str:
 	return 'https://www.room.nl/en/offerings/to-rent/details/' + str(key)
 
-# def fix_listing_json(raw_listings):
-	# real_listings = {}
-	# for listing in raw_listings:
-		# if listing.get('street'):
-			# real_listings[listing['id']] = listing
-		# else:
-			# woningen = listing.get('woningen')
-			# if isinstance(woningen, list):
-				# real_listings.update(fix_listing_json(woningen))
-	# return real_listings
-
 def process_listings(raw_listing_response):
 	listings = raw_listing_response['data']
 	misc_types = ['dwellingType', 'heating', 'sleepingRoom', 'kitchen', 'floor']

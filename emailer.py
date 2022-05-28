@@ -14,7 +14,7 @@ class Email:
 	def logout(self):
 		self.email.quit()
 
-def login(username: str, password: str, domain: str='smtp.gmail.com', port: int=587) -> Email:
+def login(username: str, password: str, domain: str, port: int) -> Email:
 	email = smtplib.SMTP(domain, port)
 	email.ehlo()
 	email.starttls()

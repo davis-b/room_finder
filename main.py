@@ -28,6 +28,11 @@ def log_err(error):
 		fileobj.write('{}\n{}\n\n'.format(date, error))
 
 def _main(email, email_recipient):
+	"""
+	Searches for new housing listings.
+	Prints new listings to stdout, and optionally
+	emails them.
+	"""
 	seen_listings = load_db(db_filename)
 	new_listings = {}
 	print('starting with {} listings saved'.format(len(seen_listings)))
@@ -56,21 +61,40 @@ def _main(email, email_recipient):
 	else:
 		print('no new listings')
 
-def main(email_username, email_password, email_recipient):
-	email = emailer.login(email_username, email_password)
+def main_with_email(email_info: dict):
+	"""
+	Email wrapper around the real main function.
+
+	Takes a dict of email related information,
+	or None if no emails are to be sent.
+
+	Logs in, calls main, then logs out of the email client,
+	"""
+	email = emailer.login(
+		email_info['username'],
+		email_info['password'],
+		domain=email_info.get('domain', 'smtp.gmail.com'),
+		port=email_info.get('port', 587),
+	)
+
 	try:
-		_main(email, recipient)
+		_main(email, email_info['recipient'])
 	except Exception as e:
 		raise e
 	finally:
 		email.logout()
 
 if __name__ == '__main__':
+	email_info = {}
 	try:
-		username = argv[1]
-		password = argv[2]
-		recipient = argv[3]
+		for index, key in enumerate(('username', 'password', 'recipient')):
+			email_info[key] = argv[index + 1]
 	except IndexError:
-		print(path.basename(__file__), '[email_username] [email_password] [recipient_address]')
+		print(path.basename(__file__), '[email_username] [email_password] [recipient_address] <email_domain> <email SMTP port>')
 		quit()
-	main(username, password, recipient)
+	try:
+		email_info['domain'] = argv[4]
+		email_info['port'] = argv[5]
+	except IndexError:
+		pass
+	main_with_email(email_info)

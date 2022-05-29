@@ -14,11 +14,16 @@ def thisdir(filename):
 
 def load_db(filepath=thisdir(db_filename)):
 	if not path.exists(filepath):
-		return {}
+		return set()
 	with open(filepath) as fileobj:
-		return json.load(fileobj)
+		try:
+			db_contents = json.load(fileobj)
+		except json.decoder.JSONDecodeError:
+			return set()
+		return set(db_contents)
 
 def save_db(listings, filepath=thisdir(db_filename)):
+	listings = list(set(listings))
 	with open(filepath, 'w') as fileobj:
 		json.dump(listings, fileobj)
 

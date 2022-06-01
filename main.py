@@ -32,7 +32,7 @@ def log_err(error):
 		date = datetime.fromtimestamp(time())
 		fileobj.write('{}\n{}\n\n'.format(date, error))
 
-def _main(email, email_recipient):
+def _main(notification_callback):
 	"""
 	Searches for new housing listings.
 	Prints new listings to stdout, and optionally
@@ -55,9 +55,7 @@ def _main(email, email_recipient):
 		body = body.strip()
 
 		try:
-			print(body)
-			if email:
-				email.send(email_recipient, 'New Housing Listing(s) : {}'.format(len(new_listings)), body)
+			notification_callback(body, len(new_listings))
 			seen_listings.update(new_listings)
 			save_db(seen_listings)
 		except Exception as err:
@@ -82,8 +80,11 @@ def main_with_email(email_info: dict):
 		port=email_info.get('port', 587),
 	)
 
+	def notify(message: int, rooms_found: int):
+		print(message)
+		email.send(email_info['recipient'], 'New Housing Listing(s) : {}'.format(rooms_found), message)
 	try:
-		_main(email, email_info['recipient'])
+		_main(notify)
 	except Exception as e:
 		raise e
 	finally:

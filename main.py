@@ -100,7 +100,7 @@ if __name__ == '__main__':
 		quit()
 	try:
 		email_info['domain'] = argv[4]
-		email_info['port'] = argv[5]
+		email_info['port'] = int(argv[5])
 	except IndexError:
 		pass
 	main_with_email(email_info)
